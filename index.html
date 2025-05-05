@@ -1,125 +1,142 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Gooner AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ViqoGPT</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #343541;
-      color: #ffffff;
+      background-color: #111827;
+      color: white;
+      font-family: sans-serif;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      padding: 1rem;
       height: 100vh;
     }
 
-    #chat-container {
-      flex: 1;
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .chat-container {
+      background: #1f2937;
+      border-radius: 1rem;
+      padding: 1rem;
+      width: 100%;
+      max-width: 480px;
+      flex-grow: 1;
       overflow-y: auto;
-      padding: 20px;
       display: flex;
       flex-direction: column;
     }
 
     .message {
       max-width: 80%;
-      padding: 12px 16px;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      white-space: pre-wrap;
-      line-height: 1.5;
+      margin: 0.25rem 0;
+      padding: 0.75rem;
+      border-radius: 1rem;
+      line-height: 1.4;
     }
 
     .user {
+      background-color: #2563eb;
       align-self: flex-end;
-      background-color: #10a37f;
+      border-bottom-right-radius: 0;
     }
 
     .bot {
+      background-color: #374151;
       align-self: flex-start;
-      background-color: #444654;
+      border-bottom-left-radius: 0;
     }
 
-    #input-container {
+    form {
       display: flex;
-      padding: 16px;
-      border-top: 1px solid #555;
-      background-color: #40414f;
+      width: 100%;
+      max-width: 480px;
+      margin-top: 0.75rem;
+      gap: 0.5rem;
     }
 
-    #question {
+    input {
       flex: 1;
-      padding: 12px;
-      font-size: 16px;
+      padding: 0.75rem;
+      border-radius: 0.75rem;
       border: none;
-      border-radius: 6px;
-      background-color: #555;
+      background-color: #374151;
       color: white;
     }
 
-    #send-btn {
-      margin-left: 10px;
-      padding: 12px 20px;
-      font-size: 16px;
-      background-color: #10a37f;
+    button {
+      background-color: #2563eb;
       color: white;
+      padding: 0.75rem 1rem;
       border: none;
-      border-radius: 6px;
+      border-radius: 0.75rem;
       cursor: pointer;
     }
 
-    #send-btn:hover {
-      background-color: #0e8f70;
+    button:hover {
+      background-color: #1d4ed8;
     }
   </style>
 </head>
 <body>
-
-  <div id="chat-container"></div>
-
-  <div id="input-container">
-    <input type="text" id="question" placeholder="Ketik pertanyaanmu..." onkeypress="handleKeyPress(event)">
-    <button id="send-btn" onclick="jawab()">Kirim</button>
-  </div>
+  <h1>ViqoGPT</h1>
+  <div class="chat-container" id="chatContainer"></div>
+  <form id="chatForm">
+    <input type="text" id="userInput" placeholder="Tanya sesuatu tentang Viqo..." autocomplete="off" />
+    <button type="submit">Kirim</button>
+  </form>
 
   <script>
-    const responses = [
-      "Viqo kontol",
-      "Viqo gendut",
-      "Viqo cuma bisa makan"
+    const jokes = [
+      "Viqo jarang sholat",
+      "viqo caper ngegym ygy",
+      "bakti jomok",
+      "Osis hama",
+      "Viqo noob",
+      "HIDUP BLONDEEE",
+      "HIDUP JOKOWIIIIII",
+      "mas ANIS mas ANIS",
+      "JAWA JAWA JAWA",
+      "GANESHA HAMA"
     ];
 
-    function tambahPesan(teks, kelas) {
-      const div = document.createElement('div');
-      div.className = `message ${kelas}`;
-      div.textContent = teks;
-      document.getElementById('chat-container').appendChild(div);
-      document.getElementById('chat-container').scrollTop = document.getElementById('chat-container').scrollHeight;
+    function getRandomJoke() {
+      const i = Math.floor(Math.random() * jokes.length);
+      return jokes[i];
     }
 
-    function jawab() {
-      const input = document.getElementById('question');
-      const pertanyaan = input.value.trim();
-      if (!pertanyaan) return;
+    const chatContainer = document.getElementById("chatContainer");
+    const chatForm = document.getElementById("chatForm");
+    const userInput = document.getElementById("userInput");
 
-      tambahPesan(pertanyaan, 'user');
-      input.value = '';
+    function appendMessage(text, sender) {
+      const msg = document.createElement("div");
+      msg.className = `message ${sender}`;
+      msg.innerText = text;
+      chatContainer.appendChild(msg);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    chatForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const input = userInput.value.trim();
+      if (!input) return;
+
+      appendMessage(input, "user");
+      userInput.value = "";
 
       setTimeout(() => {
-        const randomIndex = Math.floor(Math.random() * responses.length);
-        const jawaban = responses[randomIndex];
-        tambahPesan(jawaban, 'bot');
+        const reply = getRandomJoke();
+        appendMessage(reply, "bot");
       }, 500);
-    }
-
-    function handleKeyPress(event) {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        jawab();
-      }
-    }
+    });
   </script>
-
 </body>
 </html>
