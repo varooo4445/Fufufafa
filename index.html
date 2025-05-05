@@ -1,142 +1,108 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ViqoGPT</title>
+  <title>ChatGPT Web AI</title>
   <style>
     body {
-      margin: 0;
-      background-color: #111827;
-      color: white;
       font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 1rem;
-      height: 100vh;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
     }
-
-    h1 {
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
+    #chatbox {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
-    .chat-container {
-      background: #1f2937;
-      border-radius: 1rem;
-      padding: 1rem;
-      width: 100%;
-      max-width: 480px;
-      flex-grow: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
-
     .message {
-      max-width: 80%;
-      margin: 0.25rem 0;
-      padding: 0.75rem;
-      border-radius: 1rem;
-      line-height: 1.4;
+      margin-bottom: 10px;
     }
-
     .user {
-      background-color: #2563eb;
-      align-self: flex-end;
-      border-bottom-right-radius: 0;
+      color: blue;
     }
-
     .bot {
-      background-color: #374151;
-      align-self: flex-start;
-      border-bottom-left-radius: 0;
+      color: green;
     }
-
-    form {
+    #input-form {
       display: flex;
-      width: 100%;
-      max-width: 480px;
-      margin-top: 0.75rem;
-      gap: 0.5rem;
+      margin-top: 20px;
     }
-
-    input {
+    #user-input {
       flex: 1;
-      padding: 0.75rem;
-      border-radius: 0.75rem;
-      border: none;
-      background-color: #374151;
-      color: white;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
-
-    button {
-      background-color: #2563eb;
+    #send-btn {
+      padding: 10px 15px;
+      margin-left: 10px;
+      background: blue;
       color: white;
-      padding: 0.75rem 1rem;
       border: none;
-      border-radius: 0.75rem;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #1d4ed8;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-  <h1>ViqoGPT</h1>
-  <div class="chat-container" id="chatContainer"></div>
-  <form id="chatForm">
-    <input type="text" id="userInput" placeholder="Tanya sesuatu tentang Viqo..." autocomplete="off" />
-    <button type="submit">Kirim</button>
-  </form>
+  <div id="chatbox">
+    <div id="messages"></div>
+    <form id="input-form">
+      <input type="text" id="user-input" placeholder="Tulis pesan..." required />
+      <button type="submit" id="send-btn">Kirim</button>
+    </form>
+  </div>
 
   <script>
-    const jokes = [
-      "Viqo jarang sholat",
-      "viqo caper ngegym ygy",
-      "bakti jomok",
-      "Osis hama",
-      "Viqo noob",
-      "HIDUP BLONDEEE",
-      "HIDUP JOKOWIIIIII",
-      "mas ANIS mas ANIS",
-      "JAWA JAWA JAWA",
-      "GANESHA HAMA"
-    ];
+    const messagesDiv = document.getElementById("messages");
+    const form = document.getElementById("input-form");
+    const userInput = document.getElementById("user-input");
 
-    function getRandomJoke() {
-      const i = Math.floor(Math.random() * jokes.length);
-      return jokes[i];
+    const API_KEY = "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";
+
+    async function getResponseFromGPT(message) {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4",
+          messages: [{ role: "user", content: message }]
+        })
+      });
+
+      const data = await response.json();
+      return data.choices[0].message.content.trim();
     }
 
-    const chatContainer = document.getElementById("chatContainer");
-    const chatForm = document.getElementById("chatForm");
-    const userInput = document.getElementById("userInput");
-
-    function appendMessage(text, sender) {
-      const msg = document.createElement("div");
-      msg.className = `message ${sender}`;
-      msg.innerText = text;
-      chatContainer.appendChild(msg);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-
-    chatForm.addEventListener("submit", function (e) {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const input = userInput.value.trim();
-      if (!input) return;
-
-      appendMessage(input, "user");
+      const userMessage = userInput.value;
+      appendMessage("User", userMessage, "user");
       userInput.value = "";
 
-      setTimeout(() => {
-        const reply = getRandomJoke();
-        appendMessage(reply, "bot");
-      }, 500);
+      appendMessage("AI", "Sedang mengetik...", "bot");
+
+      const botReply = await getResponseFromGPT(userMessage);
+
+      // Ganti pesan "Sedang mengetik..." dengan jawaban asli
+      messagesDiv.lastChild.remove();
+      appendMessage("AI", botReply, "bot");
     });
+
+    function appendMessage(sender, text, className) {
+      const msg = document.createElement("div");
+      msg.className = `message ${className}`;
+      msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      messagesDiv.appendChild(msg);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
   </script>
 </body>
 </html>
