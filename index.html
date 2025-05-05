@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ChatGPT Web AI</title>
   <style>
+    /* Styling CSS */
     body {
       font-family: sans-serif;
       background: #f4f4f4;
       margin: 0;
       padding: 20px;
     }
+
     #chatbox {
       background: white;
       border-radius: 8px;
@@ -19,25 +21,31 @@
       margin: auto;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+
     .message {
       margin-bottom: 10px;
     }
+
     .user {
       color: blue;
     }
+
     .bot {
       color: green;
     }
+
     #input-form {
       display: flex;
       margin-top: 20px;
     }
+
     #user-input {
       flex: 1;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
     }
+
     #send-btn {
       padding: 10px 15px;
       margin-left: 10px;
@@ -49,6 +57,7 @@
   </style>
 </head>
 <body>
+  <!-- Chatbot Container -->
   <div id="chatbox">
     <div id="messages"></div>
     <form id="input-form">
@@ -58,12 +67,15 @@
   </div>
 
   <script>
+    // JavaScript to interact with ChatGPT API
     const messagesDiv = document.getElementById("messages");
     const form = document.getElementById("input-form");
     const userInput = document.getElementById("user-input");
 
-    const API_KEY = "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";
+    // Ganti dengan API Key ChatGPT kamu
+    const API_KEY = "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";
 
+    // Function to get response from ChatGPT API
     async function getResponseFromGPT(message) {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -81,6 +93,7 @@
       return data.choices[0].message.content.trim();
     }
 
+    // Form submit event listener
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const userMessage = userInput.value;
@@ -91,11 +104,12 @@
 
       const botReply = await getResponseFromGPT(userMessage);
 
-      // Ganti pesan "Sedang mengetik..." dengan jawaban asli
+      // Remove typing message and append AI response
       messagesDiv.lastChild.remove();
       appendMessage("AI", botReply, "bot");
     });
 
+    // Function to append message to chat
     function appendMessage(sender, text, className) {
       const msg = document.createElement("div");
       msg.className = `message ${className}`;
